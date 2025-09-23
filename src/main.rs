@@ -1,7 +1,7 @@
 mod commands;
 mod utils;
 
-use commands::general::{Data, age, skill_check};
+use commands::general::{Data, skill_check};
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 
@@ -13,7 +13,7 @@ async fn main() {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![age(), skill_check()],
+            commands: vec![skill_check()],
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {

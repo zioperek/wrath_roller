@@ -1,31 +1,24 @@
-use crate::utils::dice::get_full_roll;
-use poise::serenity_prelude as serenity;
-pub struct Data {} // User data, which is stored and accessible in all command invocations
+use crate::utils::{dice::get_full_roll, generator::generate_embed};
+
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
-/// Displays your or another user's account creation date
-#[poise::command(slash_command, prefix_command)]
-pub async fn age(
-    ctx: Context<'_>,
-    #[description = "Selected user"] user: Option<serenity::User>,
-) -> Result<(), Error> {
-    let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let response = format!("{}'s account was created at {}", u.name, u.created_at());
-    ctx.say(response).await?;
-    Ok(())
-}
+pub struct Data {}
 
 #[poise::command(slash_command, prefix_command)]
 pub async fn skill_check(
     ctx: Context<'_>,
-    #[description = "Ilość kości"] dice: u32,
-) -> Result<(), Error> {
-    let (rolls, number_of_successes, fury_dice) = get_full_roll(dice);
+    #[description = "Ilość kości"] kosci: u8,
+    #[description = "Poziom trudności"] trudnosc: u8,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let (rolls, number_of_successes, fury_dice) = get_full_roll(kosci);
+    let success = number_of_successes >= trudnosc;
     let response = format!(
-        "{:?} rolled with {} successes. With fury dice {:?}",
-        rolls, number_of_successes, fury_dice
+        "{}[{}] z {} ikonami.",
+        rolls.iter().fold(String::new(), |acc, &num| acc + &num.to_string() + ", "), fury_dice, number_of_successes
     );
-    ctx.say(response).await?;
+    let embed = generate_embed(success, fury_dice, response);
+    ctx.send(poise::CreateReply::default().embed(embed)).await?;
+
     Ok(())
 }
