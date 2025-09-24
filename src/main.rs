@@ -1,7 +1,9 @@
 mod commands;
 mod utils;
+mod models;
 
 use commands::general::{Data, skill_check};
+use models::player::make_dummy;
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 
@@ -10,7 +12,7 @@ async fn main() {
     dotenv().ok();
     let token = std::env::var("DISCORD_TOKEN").expect("DISCORD_TOKEN must be set in .env file.");
     let intents = serenity::GatewayIntents::non_privileged();
-
+    make_dummy();
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: vec![skill_check()],

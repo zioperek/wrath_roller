@@ -22,7 +22,23 @@ fn determine_fury_dice(rolled_hand: &mut Vec<u8>) -> u8 {
     rolled_hand.remove(special_die_pos as usize)
 }
 
-pub fn get_full_roll(dices: u8) -> (Vec<u8>, u8, u8) {
+pub struct DiceRoll {
+    pub rolls: Vec<u8>,
+    pub number_of_successes: u8,
+    pub fury_dice: u8,
+}
+
+impl DiceRoll {
+    pub fn new(rolls: Vec<u8>, number_of_successes: u8, fury_dice: u8) -> Self {
+        Self {
+            rolls,
+            number_of_successes,
+            fury_dice,
+        }
+    }
+}
+
+pub fn get_full_roll(dices: u8) -> DiceRoll {
     let mut rolls: Vec<u8> = roll_dices(dices);
     let mut number_of_successes = 0;
     for dice in rolls.iter() {
@@ -35,5 +51,5 @@ pub fn get_full_roll(dices: u8) -> (Vec<u8>, u8, u8) {
     }
     let fury_dice = determine_fury_dice(&mut rolls);
 
-    (rolls, number_of_successes, fury_dice)
+    DiceRoll::new(rolls, number_of_successes, fury_dice)
 }

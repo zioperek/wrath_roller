@@ -11,13 +11,14 @@ pub async fn skill_check(
     #[description = "Ilość kości"] kosci: u8,
     #[description = "Poziom trudności"] trudnosc: u8,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let (rolls, number_of_successes, fury_dice) = get_full_roll(kosci);
-    let success = number_of_successes >= trudnosc;
+    let full_dice_roll = get_full_roll(kosci);
+    let success = full_dice_roll.number_of_successes >= trudnosc;
     let response = format!(
         "{}[{}] z {} ikonami.",
-        rolls.iter().fold(String::new(), |acc, &num| acc + &num.to_string() + ", "), fury_dice, number_of_successes
+        full_dice_roll.rolls.iter().fold(String::new(), |acc, &num| acc + &num.to_string() + ", "),
+        full_dice_roll.fury_dice, full_dice_roll.number_of_successes
     );
-    let embed = generate_embed(success, fury_dice, response);
+    let embed = generate_embed(success, full_dice_roll.fury_dice, response);
     ctx.send(poise::CreateReply::default().embed(embed)).await?;
 
     Ok(())
